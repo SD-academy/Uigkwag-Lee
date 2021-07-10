@@ -3,6 +3,9 @@ from selenium.webdriver.common.keys import Keys
 import time
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
+import chromedriver_autoinstaller
+
+chromedriver_autoinstaller.install()
 
 csv_t = []
 def temp(start_,end_):
@@ -37,6 +40,7 @@ def temp(start_,end_):
         lyric_temp = []
         genre_temp = []
         date_temp = []
+        jumsu_temp = []
 
         for j in id:
             id_ = j.get_attribute('data-song-no')
@@ -62,9 +66,12 @@ def temp(start_,end_):
             date = driver.find_element_by_css_selector('#downloadfrm > div > div > div.entry > div.meta > dl > dd:nth-child(4)')
             date_temp.append(date.text)
             date_temp = date_temp[:50]
+            driver.find_element_by_xpath('/html/body/div[1]/div[3]/div/div/div/form/div/div/div[2]/div[2]/dl/dd[1]/a').click()
+            jumsu = driver.find_element_by_xpath('/html/body/div[1]/div[3]/div/div/div[2]/div/div[2]/div[4]/dl/dt[1]/div/span[2]')
+            jumsu_temp.append(jumsu.text)
+            jumsu_temp = jumsu_temp[:50]
 
-
-        csv_t.append([[i,str(i)+'월'+str(p+1)+'등',title_temp[p],artist_temp[p],like_temp[p],(lyric_temp[p]).replace('\n',' '),genre_temp[p],date_temp[p]] for p in range(len(title_temp))])
+        csv_t.append([[i,str(p+1),title_temp[p],artist_temp[p],like_temp[p],((lyric_temp[p]).replace('\n',' '))[:-4],genre_temp[p],date_temp[p],jumsu_temp[p]] for p in range(len(title_temp))])
 
 
 st = int(input('시작월을 입력해주세요 : '))
@@ -77,6 +84,6 @@ import numpy as np
 
 t = [j for i in range(len(csv_t)) for j in csv_t[i]]
 
-df = pd.DataFrame(t,columns=['month','ranking','title','artist','like','lyric','genre','date'])
+df = pd.DataFrame(t,columns=['month','ranking','title','artist','like','lyric','genre','date','rating'])
 print(df)
 df.to_csv('melon_chart.csv',index=False)
