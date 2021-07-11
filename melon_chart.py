@@ -41,6 +41,7 @@ def temp(start_,end_):
         genre_temp = []
         date_temp = []
         jumsu_temp = []
+        count_temp = []
 
         for j in id:
             id_ = j.get_attribute('data-song-no')
@@ -70,8 +71,12 @@ def temp(start_,end_):
             jumsu = driver.find_element_by_xpath('/html/body/div[1]/div[3]/div/div/div[2]/div/div[2]/div[4]/dl/dt[1]/div/span[2]')
             jumsu_temp.append(jumsu.text)
             jumsu_temp = jumsu_temp[:50]
+            vote = driver.find_element_by_xpath('/html/body/div[1]/div[3]/div/div/div[2]/div/div[2]/div[4]/dl/dd[1]/a/span[1]')
+            count_temp.append(vote.text)
+            count_temp = count_temp[:50]
 
-        csv_t.append([[i,str(p+1),title_temp[p],artist_temp[p],like_temp[p],((lyric_temp[p]).replace('\n',' '))[:-4],genre_temp[p],date_temp[p],jumsu_temp[p]] for p in range(len(title_temp))])
+
+        csv_t.append([[i,str(p+1),title_temp[p],artist_temp[p],like_temp[p],((lyric_temp[p]).replace('\n',' '))[:-4],genre_temp[p],date_temp[p],jumsu_temp[p],int(((count_temp[p]).replace(',',''))[:-1])] for p in range(len(title_temp))])
 
 
 st = int(input('시작월을 입력해주세요 : '))
@@ -84,6 +89,6 @@ import numpy as np
 
 t = [j for i in range(len(csv_t)) for j in csv_t[i]]
 
-df = pd.DataFrame(t,columns=['month','ranking','title','artist','like','lyric','genre','date','rating'])
+df = pd.DataFrame(t,columns=['month','ranking','title','artist','like','lyric','genre','date','rating','vote_count'])
 print(df)
 df.to_csv('melon_chart.csv',index=False)
